@@ -1,4 +1,6 @@
 import React, {useState, useEffect} from 'react';
+import {Link, useLocation} from "react-router-dom";
+import { SERVER_URL } from '../../Constants';
 
 // instructor views a list of sections they are teaching 
 // use the URL /sections?email=dwisneski@csumb.edu&year= &semester=
@@ -11,15 +13,61 @@ import React, {useState, useEffect} from 'react';
 // <Link to="/assignments" state={section}>View Assignments</Link>
 
 const InstructorSectionsView = (props) => {
+    const headers = ['SectionNo', 'CourseId', 'SecId', 'Building', 'Room', 'Times', '', '']; 
+    
+    const [sections, setSections] = useState([]);
+    const [message, setMessage] = useState('');
 
+    // Use this to call the state from the previous page
+    const { state } = useLocation();
+
+    const fetchSections = async () => {
+        try {
+            const response = await fetch(`${SERVER_URL}/sections?email=dwisneski@csumb.edu&year=` + state.year + `&semester=` + state.semester);
+            if (response.ok) {
+                const sections = await response.json();
+                setSections(sections);
+            } else {
+                const json = await response.json();
+                setMessage("reponse error: " + json.message);
+            }
+        } catch (err) {
+            setMessage("network error: " + err);
+        }        
+    }
+
+    useEffect( () => {
+        fetchSections();
+    }, []);
     
      
     return(
-        <> 
-           <h3>Not implemented</h3>
-        </>
+        <div> 
+           <h3>Sections</h3>
+           <h4>{message}</h4>
+           <table className="Center"> 
+            <thead>
+                <tr>
+                    {headers.map((s, idx) => (<th key={idx}>{s}</th>))}
+                </tr>
+            </thead>
+            <tbody>
+                {sections.map((s) => (
+                    <tr key = {s.secNo}>
+                        <td>{s.secNo}</td>
+                        <td>{s.courseId}</td>
+                        <td>{s.secId}</td>
+                        <td>{s.building}</td>
+                        <td>{s.room}</td>
+                        <td>{s.times}</td>
+                        <td><Link to="/enrollments" state={sections}>View Enrollments</Link></td>
+                        <td><Link to="/assignments" state={sections}>View Assignments</Link></td>
+                    </tr>
+                ))}
+            </tbody>
+           </table>
+        </div>
     );
 }
 
 export default InstructorSectionsView;
-
