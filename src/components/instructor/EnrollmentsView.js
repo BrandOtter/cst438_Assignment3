@@ -20,22 +20,32 @@ const EnrollmentsView = (props) => {
         setEnrollments({...enrollments, [event.target.name]:event.target.value});
     }
 
-    const location = useLocation();
-    const {secNo, courseId, secId} = location.state;
+    const { state } = useLocation();
 
-    const fetchEnrollments = async () => {
+    const fetchEnrollments = async () => {       
         try {
-            const response = await fetch(`${SERVER_URL}/sections/` + secNo + `/enrollments`);
+            const response = await fetch(`${SERVER_URL}/sections/` + state.newIndex + `/enrollments`);
             if (response.ok) {
                 const enrollments = await response.json();
                 setEnrollments(enrollments);
             } else {
                 const json = await response.json();
-                setMessage("response error: " + json.message + location.secNo);
+                setMessage("response error: " + json.message);
             }
         } catch (err) {
             setMessage("network error: " + err);
         }
+    }
+
+    // Used to set the grade after a change.
+    // There is currently an issue where the grade change
+    // does not save on the DB. 
+    const setGrade = (e) => {
+        const row_idx = e.target.parentNode.parentNode.rowIndex - 1;
+        const newData = [...enrollments];
+        
+        newData[row_idx].grade = e.target.value;
+        setEnrollments(newData);
     }
 
     useEffect( () => {
@@ -58,10 +68,10 @@ const EnrollmentsView = (props) => {
                             <td>{e.enrollmentId}</td>
                             <td>{e.studentId}</td>
                             <td>{e.name}</td>
-                            <td><input type="text" name="grade" value={e.grade} onChange={onGradeChange} /></td>
-                            <td></td>
+                            <td>{e.email}</td>
+                            <td><input type="text" name="grade" onChange={setGrade} defaultValue={e.grade}/></td>
                         </tr>
-                    ))}
+                    ))}                    
                 </tbody>
             </table>
         </div>

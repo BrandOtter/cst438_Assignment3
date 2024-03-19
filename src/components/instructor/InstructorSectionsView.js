@@ -15,8 +15,11 @@ import { SERVER_URL } from '../../Constants';
 const InstructorSectionsView = (props) => {
     const headers = ['SectionNo', 'CourseId', 'SecId', 'Building', 'Room', 'Times', '', '']; 
     
-    const [sections, setSections] = useState([]);
+    const [sections, setSections] = useState([ ]);
     const [message, setMessage] = useState('');
+
+    // Used to set the secID and be passed to EnrollmentView
+    const [indexes, setIndex] = useState({newIndex:''});
 
     // Use this to call the state from the previous page
     const { state } = useLocation();
@@ -26,7 +29,8 @@ const InstructorSectionsView = (props) => {
             const response = await fetch(`${SERVER_URL}/sections?email=dwisneski@csumb.edu&year=` + state.year + `&semester=` + state.semester);
             if (response.ok) {
                 const sections = await response.json();
-                setSections(sections);
+                setSections(sections);     
+                
             } else {
                 const json = await response.json();
                 setMessage("reponse error: " + json.message);
@@ -39,7 +43,13 @@ const InstructorSectionsView = (props) => {
     useEffect( () => {
         fetchSections();
     }, []);
-    
+
+    // This will set the secID based on the enrollment link clicked
+    // so EnrollmentView.js will load the correct enrollment. 
+    const getSecId = (e) => {
+        const row_idx = e.target.parentNode.parentNode.rowIndex - 1;
+        indexes.newIndex = sections[row_idx].secNo;
+      }
      
     return(
         <div> 
@@ -60,7 +70,7 @@ const InstructorSectionsView = (props) => {
                         <td>{s.building}</td>
                         <td>{s.room}</td>
                         <td>{s.times}</td>
-                        <td><Link to="/enrollments" state={sections}>View Enrollments</Link></td>
+                        <td><Link to="/enrollments" state={indexes} onClick={getSecId}>View Enrollments</Link></td>
                         <td><Link to="/assignments" state={sections}>View Assignments</Link></td>
                     </tr>
                 ))}
