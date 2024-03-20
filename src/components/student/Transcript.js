@@ -14,22 +14,14 @@ const Transcript = (props) => {
     const [message, setMessage] = useState('');
 
     const [studentId, setID] = useState({id:3})
+    const [courses, setCourses] = useState([]);
 
     const fetchTranscript = async () => {
         try {
             const response = await fetch(`${SERVER_URL}/transcripts?studentId=` + studentId.id);
             if (response.ok) {
                 const transcript = await response.json();
-                setTranscript(transcript); 
-
-                // Check if there are any null values and replace
-                for(var i = 0; i < transcript.length; i++){
-                    if(transcript[i].grade == null){
-                        const newData = [...transcript];
-                        newData[i].grade = 'No Grade';
-                        setTranscript(newData);
-                    }
-                }                
+                setTranscript(transcript);
                 
             } else {
                 const json = await response.json();
@@ -40,8 +32,50 @@ const Transcript = (props) => {
         }        
     }
 
+    // Fetch courses as a course name source.
+    const fetchCourses = async () => {
+        try {
+            const response = await fetch(`${SERVER_URL}/courses`);
+            if (response.ok) {
+                const courses = await response.json();
+                setCourses(courses);               
+                
+            } else {
+                const json = await response.json();
+                setMessage("reponse error: " + json.message);
+            }
+        } catch (err) {
+            setMessage("network error: " + err);
+        }        
+    }
+
+    // Set the title if the courseID's match
+    const setTitle = async () => {        
+        for(var i = 0; i < transcript.length; i++){
+            const newData = [...transcript]
+            setTranscript([...newData, {title: ' '}]);
+
+            for(var j = 0; j < courses.length; j++){
+                if(transcript[i].courseId === courses[j].courseId){
+                    const newData = [...transcript]
+                    newData[i].title = courses[j].title;
+                    setTranscript(newData);                             
+                }
+            } 
+            
+            if(transcript[i].grade === null){
+                const newData = [...transcript];
+                newData[i].grade = 'No Grade';
+                setTranscript(newData); 
+            }                                                                   
+        }  
+    }
+
     useEffect( () => {
+        fetchCourses();
         fetchTranscript();
+        setTitle();
+
     }, []);
      
     return(
