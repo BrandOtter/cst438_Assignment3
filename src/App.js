@@ -14,6 +14,7 @@ import InstructorHome from './components/instructor/InstructorHome';
 import AssignmentsView from './components/instructor/AssignmentsView';
 import EnrollmentsView from './components/instructor/EnrollmentsView';
 import InstructorSectionsView from './components/instructor/InstructorSectionsView';
+import CourseEnroll from "./components/student/CourseEnroll";
 
 
 function App() {
