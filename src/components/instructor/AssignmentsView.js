@@ -1,16 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { SERVER_URL } from '../../Constants';
 import AssignmentAdd from './AssignmentAdd';
+import AssignmentGrade from './AssignmentGrade';
 
 const AssignmentsView = (props) => {
     const [assignments, setAssignments] = useState([]);
     const [message, setMessage] = useState('');
+    const [gradingAssignmentId, setGradingAssignmentId] = useState(null);
 
     const location = useLocation();
     const { secNo } = location.state;
 
-    const fetchAssignments = async () => {
+    const fetchAssignments = useCallback(async () => {
         try {
             const response = await fetch(`${SERVER_URL}/sections/${secNo}/assignments`);
             if (response.ok) {
@@ -22,15 +24,14 @@ const AssignmentsView = (props) => {
         } catch (error) {
             setMessage(`Error: ${error}`);
         }
-    };
+    }, [secNo]); // secNo is the dependency
 
     useEffect(() => {
         fetchAssignments();
-    }, [secNo, fetchAssignments]);
+    }, [fetchAssignments]); // fetchAssignments is stable now
 
     const handleGrade = (assignmentId) => {
-        console.log('Grade:', assignmentId);
-        // Implementation for grading an assignment
+        setGradingAssignmentId(assignmentId);
     };
 
     const handleEdit = (assignmentId) => {
@@ -48,7 +49,16 @@ const AssignmentsView = (props) => {
             <h3>Assignments</h3>
             <h4>{message}</h4>
             <AssignmentAdd secNo={secNo} onAddSuccess={fetchAssignments} />
-            <table className="Center">
+            {gradingAssignmentId && (
+                <div>
+                    <button onClick={() => setGradingAssignmentId(null)}>Back to Assignments List</button>
+                    <AssignmentGrade assignmentId={gradingAssignmentId} onGradeSuccess={() => {
+                        setGradingAssignmentId(null); // Reset after grading
+                        fetchAssignments(); // Refresh assignments list
+                    }} />
+                </div>
+            )}
+            <table className="Center" style={{ marginTop: '20px' }}>
                 <thead>
                 <tr>
                     <th>Assignment ID</th>
