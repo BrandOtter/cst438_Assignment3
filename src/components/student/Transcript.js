@@ -12,6 +12,7 @@ const Transcript = (props) => {
 
     const [transcript, setTranscript] = useState([]);
     const [message, setMessage] = useState('');
+   
 
     const [studentId, setID] = useState({id:3})
     const [courses, setCourses] = useState([]);
@@ -71,12 +72,20 @@ const Transcript = (props) => {
         }  
     }
 
-    useEffect( () => {
+    const fetchEverything = async () => {
+        try{
         fetchCourses();
         fetchTranscript();
         setTitle();
+        }  catch (err) {
+            setMessage("network error: " + err);
+        }
+    }
 
-    }, []);
+    useEffect( () => {
+        fetchEverything();
+
+    });
      
     return(
         <div> 
