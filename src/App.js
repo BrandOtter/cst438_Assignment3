@@ -15,6 +15,7 @@ import AssignmentsView from './components/instructor/AssignmentsView';
 import EnrollmentsView from './components/instructor/EnrollmentsView';
 import InstructorSectionsView from './components/instructor/InstructorSectionsView';
 import CourseEnroll from "./components/student/CourseEnroll";
+import AssignmentAdd from './components/instructor/AssignmentAdd';
 
 
 function App() {
@@ -50,6 +51,7 @@ function App() {
               <Route path="studentAssignments" element={<StudentAssignmentsView />} />
               <Route path="transcript" element={<Transcript />} />
               <Route path="addCourse" element={<CourseEnroll />} />
+              <Route path="addAssignment" element={<AssignmentAdd />} />
             </Route>
           </Routes>
         </BrowserRouter>
