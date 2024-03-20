@@ -13,13 +13,24 @@ const AssignmentsStudentView = (props) => {
 
     const [assignments, setAssignments] = useState([]);
     const [message, setMessage] = useState('');
+
+    const [studentId, setID] = useState({id:3, year:2024, semester:'Spring'})
     
     const fetchAssignments = async () => {
         try {
-            const response = await fetch(`${SERVER_URL}/assignments?studentId=3&year=2024&semester=Spring`);
+            const response = await fetch(`${SERVER_URL}/assignments?studentId=` + 3 + `&year=` + studentId.year + `&semester=` + studentId.semester);
             if (response.ok) {
                 const assignments = await response.json();
-                setAssignments(assignments);     
+                setAssignments(assignments);
+                
+                // Check if there are any null values and replace
+                for(var i = 0; i < assignments.length; i++){
+                    if(assignments[i].score == null){
+                        const newData = [...assignments];
+                        newData[i].score = 'No Score';
+                        setAssignments(newData);
+                    }
+                }  
                 
             } else {
                 const json = await response.json();
@@ -46,7 +57,7 @@ const AssignmentsStudentView = (props) => {
             </thead>
             <tbody>
                 {assignments.map((a) => (
-                    <tr key = {a.courseId}>
+                    <tr key = {a.assignmentId}>
                         <td>{a.courseId}</td>
                         <td>{a.title}</td>
                         <td>{a.dueDate}</td>
