@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { SERVER_URL } from '../../Constants';
+import AssignmentAdd from './AssignmentAdd';
 
 const AssignmentsView = (props) => {
     const [assignments, setAssignments] = useState([]);
@@ -9,23 +10,23 @@ const AssignmentsView = (props) => {
     const location = useLocation();
     const { secNo } = location.state;
 
-    useEffect(() => {
-        const fetchAssignments = async () => {
-            try {
-                const response = await fetch(`${SERVER_URL}/sections/${secNo}/assignments`);
-                if (response.ok) {
-                    const data = await response.json();
-                    setAssignments(data);
-                } else {
-                    setMessage('Failed to fetch assignments.');
-                }
-            } catch (error) {
-                setMessage(`Error: ${error}`);
+    const fetchAssignments = async () => {
+        try {
+            const response = await fetch(`${SERVER_URL}/sections/${secNo}/assignments`);
+            if (response.ok) {
+                const data = await response.json();
+                setAssignments(data);
+            } else {
+                setMessage('Failed to fetch assignments.');
             }
-        };
+        } catch (error) {
+            setMessage(`Error: ${error}`);
+        }
+    };
 
+    useEffect(() => {
         fetchAssignments();
-    }, [secNo]); // Depend on secNo to refetch if it changes
+    }, [secNo, fetchAssignments]);
 
     const handleGrade = (assignmentId) => {
         console.log('Grade:', assignmentId);
@@ -46,6 +47,7 @@ const AssignmentsView = (props) => {
         <div>
             <h3>Assignments</h3>
             <h4>{message}</h4>
+            <AssignmentAdd secNo={secNo} onAddSuccess={fetchAssignments} />
             <table className="Center">
                 <thead>
                 <tr>

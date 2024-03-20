@@ -1,19 +1,46 @@
 import React, { useState } from 'react';
+import {SERVER_URL} from "../../Constants";
 
-// complete the code.  
-// instructor adds an assignment to a section
-// use mui Dialog with assignment fields Title and DueDate
-// issue a POST using URL /assignments to add the assignment
+const AssignmentAdd = ({ secNo, onAddSuccess }) => {
+    const [title, setTitle] = useState('');
+    const [dueDate, setDueDate] = useState('');
 
-const AssignmentAdd = (props)  => {
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        // Construct the new assignment object
+        const newAssignment = {
+            title,
+            dueDate,
+            secId: secNo, // Not sure why this works... Need to revisit backend
+        };
 
-   
+        try {
+            const response = await fetch(`${SERVER_URL}/assignments`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newAssignment),
+            });
+            if (response.ok) {
+                onAddSuccess();
+                setTitle('');
+                setDueDate('');
+            } else {
+                throw new Error('Failed to add assignment.');
+            }
+        } catch (error) {
+            console.error('Error adding assignment:', error);
+        }
+    };
 
     return (
-        <>
-            <h3>Not implemented</h3>
-        </>                       
-    )
-}
+        <form onSubmit={handleSubmit}>
+            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" required />
+            <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} required />
+            <button type="submit">Add Assignment</button>
+        </form>
+    );
+};
 
 export default AssignmentAdd;
