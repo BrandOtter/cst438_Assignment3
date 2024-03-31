@@ -28,7 +28,7 @@ const AssignmentGrade = ({ assignmentId, onGradeSuccess }) => {
     const handleScoreChange = (event, gradeId) => {
         const newScores = grades.map((grade) => {
             if (grade.gradeId === gradeId) {
-                return { ...grade, score: event.target.value };
+                return { ...grade, score: parseInt(event.target.value, 10) };
             }
             return grade;
         });
@@ -37,31 +37,32 @@ const AssignmentGrade = ({ assignmentId, onGradeSuccess }) => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        const updatePromises = grades.map((grade) => {
-            const url = grade.gradeId ? `${SERVER_URL}/grades/${grade.gradeId}` : `${SERVER_URL}/grades`;
-            const method = grade.gradeId ? 'PUT' : 'POST';
-            const body = grade.gradeId ? { score: grade.score } : {
-                score: grade.score,
-                assignmentId: assignmentId,
-                // enrollmentId needs to be known for new grades, ensure it's provided somehow
-                enrollmentId: grade.enrollmentId,
-            };
-
-            return fetch(url, {
-                method: method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body),
-            });
-        });
 
         try {
-            // Wait for all grade updates/creations to complete
-            await Promise.all(updatePromises);
+            for (const grade of grades) {
+                const url = `${SERVER_URL}/grade`; // Changed to use the /grade endpoint
+                const body = {
+                    gradeId: grade.gradeId,
+                    score: grade.score
+                };
+
+                const response = await fetch(url, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to update grade.');
+                }
+            }
+
             alert('Grades updated successfully!');
-            onGradeSuccess(); // This function should be passed as a prop, as done in your AssignmentsView component
+            onGradeSuccess(); // This function should be passed as a prop, as done in AssignmentsView component
         } catch (error) {
             console.error('Error updating grades:', error);
-            alert('Failed to update grades.');
+            setMessage('Failed to update grades.');
+            alert(error.message);
         }
     };
 
@@ -99,7 +100,7 @@ const AssignmentGrade = ({ assignmentId, onGradeSuccess }) => {
                 </table>
                 <button type="submit">Update Grades</button>
             </form>
-            {message && <p>{message}</p>}
+            {message && <p>{message}</p> && setMessage('Grades updates successfully.')}
         </>
     );
 };
