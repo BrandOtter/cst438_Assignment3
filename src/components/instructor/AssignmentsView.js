@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
-import { SERVER_URL } from '../../Constants';
+import { GRADEBOOK_URL } from '../../Constants';
 import AssignmentAdd from './AssignmentAdd';
 import AssignmentGrade from './AssignmentGrade';
 
@@ -14,7 +14,7 @@ const AssignmentsView = (props) => {
 
     const fetchAssignments = useCallback(async () => {
         try {
-            const response = await fetch(`${SERVER_URL}/sections/${secNo}/assignments`);
+            const response = await fetch(`${GRADEBOOK_URL}/sections/${secNo}/assignments`);
             if (response.ok) {
                 const data = await response.json();
                 setAssignments(data);

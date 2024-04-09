@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SERVER_URL } from '../../Constants';
+import { GRADEBOOK_URL } from '../../Constants';
 
 const AssignmentGrade = ({ assignmentId, onGradeSuccess }) => {
     const [grades, setGrades] = useState([]);
@@ -8,7 +8,7 @@ const AssignmentGrade = ({ assignmentId, onGradeSuccess }) => {
     useEffect(() => {
         const fetchGrades = async () => {
             try {
-                const response = await fetch(`${SERVER_URL}/assignments/${assignmentId}/grades`);
+                const response = await fetch(`${GRADEBOOK_URL}/assignments/${assignmentId}/grades`);
                 if (response.ok) {
                     const data = await response.json();
                     setGrades(data);
@@ -40,7 +40,7 @@ const AssignmentGrade = ({ assignmentId, onGradeSuccess }) => {
 
         try {
             for (const grade of grades) {
-                const url = `${SERVER_URL}/grade`; // Changed to use the /grade endpoint
+                const url = `${GRADEBOOK_URL}/grade`; // Changed to use the /grade endpoint
                 const body = {
                     gradeId: grade.gradeId,
                     score: grade.score

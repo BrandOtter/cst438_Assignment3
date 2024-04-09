@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import Button from '@mui/material/Button';
-import {SERVER_URL} from '../../Constants';
+import {GRADEBOOK_URL} from '../../Constants';
 
 // student can view schedule of sections 
 // use the URL /enrollment?studentId=3&year= &semester=
@@ -22,7 +22,7 @@ const ScheduleView = (props) => {
     
     const fetchSchedule = async () => {
         try {
-            const response = await fetch(`${SERVER_URL}/enrollments?studentId=` + 3 + `&year=` + studentId.year + `&semester=` + studentId.semester);
+            const response = await fetch(`${GRADEBOOK_URL}/enrollments?studentId=` + 3 + `&year=` + studentId.year + `&semester=` + studentId.semester);
             if (response.ok) {
                 const schedule = await response.json();
                 setSchedule(schedule);
@@ -47,7 +47,7 @@ const ScheduleView = (props) => {
 
     const deleteCourse = async (courseId) => {
         try {
-          const response = await fetch (`${SERVER_URL}/enrollments/` + courseId, 
+          const response = await fetch (`${GRADEBOOK_URL}/enrollments/` + courseId,
               {
                 method: 'DELETE',
                 headers: {

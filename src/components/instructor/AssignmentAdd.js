@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {SERVER_URL} from "../../Constants";
+import {GRADEBOOK_URL} from "../../Constants";
 
 const AssignmentAdd = ({ secNo, onAddSuccess }) => {
     const [title, setTitle] = useState('');
@@ -15,7 +15,7 @@ const AssignmentAdd = ({ secNo, onAddSuccess }) => {
         };
 
         try {
-            const response = await fetch(`${SERVER_URL}/assignments`, {
+            const response = await fetch(`${GRADEBOOK_URL}/assignments`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
