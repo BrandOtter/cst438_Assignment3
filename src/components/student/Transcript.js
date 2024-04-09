@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { GRADEBOOK_URL } from '../../Constants';
+import { REGISTRAR_URL } from '../../Constants';
 
 // students gets a list of all courses taken and grades
 // use the URL /transcript?studentId=
@@ -19,7 +19,7 @@ const Transcript = (props) => {
 
     const fetchTranscript = async () => {
         try {
-            const response = await fetch(`${GRADEBOOK_URL}/transcripts?studentId=` + studentId.id);
+            const response = await fetch(`${REGISTRAR_URL}/transcripts?studentId=` + studentId.id);
             if (response.ok) {
                 const transcript = await response.json();
                 setTranscript(transcript);
@@ -36,7 +36,7 @@ const Transcript = (props) => {
     // Fetch courses as a course name source.
     const fetchCourses = async () => {
         try {
-            const response = await fetch(`${GRADEBOOK_URL}/courses`);
+            const response = await fetch(`${REGISTRAR_URL}/courses`);
             if (response.ok) {
                 const courses = await response.json();
                 setCourses(courses);               

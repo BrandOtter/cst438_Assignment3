@@ -17,7 +17,6 @@ import InstructorSectionsView from './components/instructor/InstructorSectionsVi
 import CourseEnroll from "./components/student/CourseEnroll";
 import AssignmentAdd from './components/instructor/AssignmentAdd';
 
-
 function App() {
 
   // change to INSTRUCTOR or STUDENT for testing.  
