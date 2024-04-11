@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {useLocation} from 'react-router-dom';
+import Button from '@mui/material/Button';
 import { GRADEBOOK_URL } from '../../Constants';
 
 // instructor view list of students enrolled in a section 
@@ -16,9 +17,8 @@ const EnrollmentsView = (props) => {
     const [enrollments, setEnrollments] = useState([]);
     const [message, setMessage] = useState('');
 
-    const onGradeChange = (event) => {
-        setEnrollments({...enrollments, [event.target.name]:event.target.value});
-    }
+    const location = useLocation();
+    const {secNo, courseId, secId} = location.state;
 
     const { state } = useLocation();
 
@@ -37,44 +37,70 @@ const EnrollmentsView = (props) => {
         }
     }
 
-    // Used to set the grade after a change.
-    // There is currently an issue where the grade change
-    // does not save on the DB. 
-    const setGrade = (e) => {
-        const row_idx = e.target.parentNode.parentNode.rowIndex - 1;
-        const newData = [...enrollments];
-        
-        newData[row_idx].grade = e.target.value;
-        setEnrollments(newData);
-    }
-
     useEffect( () => {
         fetchEnrollments();
     }, []);
 
+    const saveGrades = async () => {
+        try {
+            const response = await fetch (
+                `${GRADEBOOK_URL}/enrollments`, 
+                {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                }, 
+                body: JSON.stringify(enrollments),
+                });
+            if (response.ok) {
+                setMessage("Grades saved");
+                fetchEnrollments();
+            } else {
+                const rc = await response.json();
+                setMessage(rc.message);
+            } 
+        } catch (err) {
+            setMessage("network error: "+err);
+        }
+    }
+
+    const onGradeChange = (e) => {
+        const copy_enrollments = enrollments.map((x) => x);
+        const row_idx = e.target.parentNode.parentNode.rowIndex - 1;
+        copy_enrollments[row_idx] = {...(copy_enrollments[row_idx]), grade: e.target.value};
+        setEnrollments(copy_enrollments);      
+    }
+
     return(
-        <div> 
-            <h3>Enrollments</h3>   
-            <h4>{message}</h4>
-            <table className="Center">
-                <thead>
-                    <tr>
-                        {headers.map((e, idx) => (<th key={idx}>{e}</th>))}
-                    </tr>
-                </thead>
-                <tbody>
-                    {enrollments.map((e) => (
-                        <tr key = {e.enrollmentId}>
-                            <td>{e.enrollmentId}</td>
-                            <td>{e.studentId}</td>
-                            <td>{e.name}</td>
-                            <td>{e.email}</td>
-                            <td><input type="text" name="grade" onChange={setGrade} defaultValue={e.grade}/></td>
+        <> 
+            <h3>{message}</h3>   
+            
+            { enrollments.length > 0 && 
+                <> 
+                    <h3> {courseId}-{secId} Enrollments</h3>   
+                    
+                    <table className="Center" > 
+                        <thead>
+                        <tr>
+                            {headers.map((s, idx) => (<th key={idx}>{s}</th>))}
                         </tr>
-                    ))}                    
-                </tbody>
-            </table>
-        </div>
+                        </thead>
+                        <tbody>
+                        {enrollments.map((e) => (
+                                <tr key={e.enrollmentId}>
+                                <td>{e.enrollmentId}</td>
+                                <td>{e.studentId}</td>
+                                <td>{e.name}</td>
+                                <td>{e.email}</td>
+                                <td><input type="text" name="grade" value={(e.grade)?e.grade:''} onChange={onGradeChange} /></td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    <Button onClick={saveGrades}>Save Grades</Button>
+                </>
+            }
+        </>
     );
 }
 
