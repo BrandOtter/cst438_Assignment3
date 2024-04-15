@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { SERVER_URL } from '../../Constants';
+import { REGISTRAR_URL } from '../../Constants';
 
 // student views a list of assignments and assignment grades 
 // use the URL  /assignments?studentId= &year= &semester=
@@ -18,7 +18,7 @@ const AssignmentsStudentView = (props) => {
     
     const fetchAssignments = async () => {
         try {
-            const response = await fetch(`${SERVER_URL}/assignments?studentId=` + 3 + `&year=` + studentId.year + `&semester=` + studentId.semester);
+            const response = await fetch(`${REGISTRAR_URL}/assignments?studentId=` + 3 + `&year=` + studentId.year + `&semester=` + studentId.semester);
             if (response.ok) {
                 const assignments = await response.json();
                 setAssignments(assignments);

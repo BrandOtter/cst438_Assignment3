@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import Button from '@mui/material/Button';
-import {SERVER_URL} from '../../Constants';
+import {REGISTRAR_URL} from '../../Constants';
 
 // students displays a list of open sections for a 
 // use the URL /sections/open
@@ -21,7 +21,7 @@ const CourseEnroll = (props) => {
     const fetchSections = async () => {
       
         try {
-            const response = await fetch(`${SERVER_URL}/sections/open`);
+            const response = await fetch(`${REGISTRAR_URL}/sections/open`);
             if (response.ok) {
               const data = await response.json();
               setSections(data);
@@ -38,7 +38,7 @@ const CourseEnroll = (props) => {
     const enrollInSection = async (e) => {
       const row_idx = e.target.parentNode.parentNode.rowIndex - 1;
       const secNo = sections[row_idx].secNo;
-      const enrollurl = `${SERVER_URL}/enrollments/sections/${secNo}?studentId=3`;
+      const enrollurl = `${REGISTRAR_URL}/enrollments/sections/${secNo}?studentId=3`;
       try {
        
         const response = await fetch(enrollurl, 
