@@ -20,7 +20,10 @@ const Transcript = (props) => {
     const fetchTranscript = async () => {
         try {
             const jwt = sessionStorage.getItem('jwt');
-            const response = await fetch(`${REGISTRAR_URL}/transcripts`);
+            const response = await fetch(`${REGISTRAR_URL}/transcripts`,
+            {headers: {
+                'Authorization': jwt,
+            }});
             if (response.ok) {
                 const transcript = await response.json();
                 setTranscript(transcript);
