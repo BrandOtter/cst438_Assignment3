@@ -10,11 +10,7 @@ import { REGISTRAR_URL} from '../../Constants';
 const Transcript = (props) => {
     const headers = ['Year', 'Semester', 'CourseId', 'SectionId', 'Title', 'Credits', 'Grade'];
 
-    const [transcript, setTranscript] = useState([]);
-    const [message, setMessage] = useState('');
-   
-
-    const [studentId, setID] = useState({id:3})
+    const [message, setMessage] = useState('');   
     const [courses, setCourses] = useState([]);
 
     const fetchTranscript = async () => {
@@ -26,7 +22,7 @@ const Transcript = (props) => {
             }});
             if (response.ok) {
                 const transcript = await response.json();
-                setTranscript(transcript);
+                setCourses(transcript);
                 
             } else {
                 const json = await response.json();
@@ -35,66 +31,17 @@ const Transcript = (props) => {
         } catch (err) {
             setMessage("network error: " + err);
         }        
-    }
-
-    // Fetch courses as a course name source.
-    const fetchCourses = async () => {
-        try {
-            const response = await fetch(`${REGISTRAR_URL}/courses`);
-            if (response.ok) {
-                const courses = await response.json();
-                setCourses(courses);               
-                
-            } else {
-                const json = await response.json();
-                setMessage("reponse error: " + json.message);
-            }
-        } catch (err) {
-            setMessage("network error: " + err);
-        }        
-    }
-
-    // Set the title if the courseID's match
-    const setTitle = async () => {        
-        for(var i = 0; i < transcript.length; i++){
-            const newData = [...transcript]
-            setTranscript([...newData, {title: ' '}]);
-
-            for(var j = 0; j < courses.length; j++){
-                if(transcript[i].courseId === courses[j].courseId){
-                    const newData = [...transcript]
-                    newData[i].title = courses[j].title;
-                    setTranscript(newData);                             
-                }
-            } 
-            
-            if(transcript[i].grade === null){
-                const newData = [...transcript];
-                newData[i].grade = 'No Grade';
-                setTranscript(newData); 
-            }                                                                   
-        }  
-    }
-
-    const fetchEverything = async () => {
-        try{
-        fetchCourses();
-        fetchTranscript();
-        setTitle();
-        }  catch (err) {
-            setMessage("network error: " + err);
-        }
     }
 
     useEffect( () => {
-        fetchEverything();
-
-    });
+        fetchTranscript();
+    }, [])
      
     return(
         <div> 
            <h3>Transcript</h3>
            <h4>{message}</h4>
+           {(courses.length > 0) ? (<p>Student id : {courses[0].studentId} <br/>  Student name : {courses[0].name} </p> ) : '' }
            <table className="Center"> 
             <thead>
                 <tr>
@@ -102,7 +49,7 @@ const Transcript = (props) => {
                 </tr>
             </thead>
             <tbody>
-                {transcript.map((t) => (
+                {courses.map((t) => (
                     <tr key = {t.enrollmentId}>
                         <td>{t.year}</td>
                         <td>{t.semester}</td>

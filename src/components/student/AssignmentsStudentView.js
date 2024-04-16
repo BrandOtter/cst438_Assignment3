@@ -18,7 +18,12 @@ const AssignmentsStudentView = (props) => {
     
     const fetchAssignments = async () => {
         try {
-            const response = await fetch(`${REGISTRAR_URL}/assignments?studentId=` + 3 + `&year=` + studentId.year + `&semester=` + studentId.semester);
+            const jwt = sessionStorage.getItem('jwt');
+            //const response = await fetch(`${REGISTRAR_URL}/assignments?studentId=` + 3 + `&year=` + studentId.year + `&semester=` + studentId.semester);
+            const response = await fetch(`${REGISTRAR_URL}/enrollments?studentId=` + studentId + `&year=` + studentId.year + `&semester=` + studentId.semester,
+            {headers: {
+                'Authorization': jwt,
+            }});
             if (response.ok) {
                 const assignments = await response.json();
                 setAssignments(assignments);

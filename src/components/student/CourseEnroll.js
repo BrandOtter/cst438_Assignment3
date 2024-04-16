@@ -15,13 +15,16 @@ const CourseEnroll = (props) => {
     const headers = ['SecNo', 'CourseId', 'SecId',  'Year', 'Semester', 'Building', 'Room', 'Times', '', ''];
 
     const [sections, setSections] = useState([]);
-
     const [message, setMessage] = useState('');
 
     const fetchSections = async () => {
       
         try {
-            const response = await fetch(`${REGISTRAR_URL}/sections/open`);
+            const jwt = sessionStorage.getItem('jwt');
+            const response = await fetch(`${REGISTRAR_URL}/sections/open`,
+            {headers: {
+                'Authorization': jwt,
+            }});
             if (response.ok) {
               const data = await response.json();
               setSections(data);
@@ -34,16 +37,21 @@ const CourseEnroll = (props) => {
           }
         
     }
+
+    useEffect( () => {
+      fetchSections();
+    }, []);
  	  
     const enrollInSection = async (e) => {
       const row_idx = e.target.parentNode.parentNode.rowIndex - 1;
       const secNo = sections[row_idx].secNo;
       const enrollurl = `${REGISTRAR_URL}/enrollments/sections/${secNo}?studentId=3`;
       try {
-       
+        const jwt = sessionStorage.getItem('jwt');
         const response = await fetch(enrollurl, 
           { method: 'POST', 
             headers: {
+            'Authorization': jwt,
             'Content-Type': 'application/json',
             }
           }
@@ -62,9 +70,7 @@ const CourseEnroll = (props) => {
       }
 
     }
-    useEffect( () => {
-        fetchSections();
-    }, []);
+    
 
     return(
         <div> 

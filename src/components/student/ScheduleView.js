@@ -13,109 +13,127 @@ import {REGISTRAR_URL} from '../../Constants';
 // issue a DELETE with URL /enrollment/{enrollmentId}
 
 const ScheduleView = (props) => {
-    const headers = ['EnrollmentId', 'Times', 'CourseId', 'SectionId', 'Year', 'Credits', 'Grade', ''];
-
-    const [schedule, setSchedule] = useState([]);
-    const [message, setMessage] = useState('');
-
-    const [studentId, setID] = useState({id:3, year:2024, semester:'Spring'})
     
-    const fetchSchedule = async () => {
-        try {
-            const response = await fetch(`${REGISTRAR_URL}/enrollments?studentId=` + 3 + `&year=` + studentId.year + `&semester=` + studentId.semester);
-            if (response.ok) {
-                const schedule = await response.json();
-                setSchedule(schedule);
-                
-                // Check if there are any null grade and replace
-                for(var i = 0; i < schedule.length; i++){
-                    if(schedule[i].grade === null){
-                        const newData = [...schedule];
-                        newData[i].grade = 'No Grade';
-                        setSchedule(newData);
-                    }
-                } 
-                
-            } else {
-                const json = await response.json();
-                setMessage("reponse error: " + json.message);
-            }
-        } catch (err) {
-            setMessage("network error: " + err);
-        }        
-    }
+  // student views their class schedule for a given term
 
-    const deleteCourse = async (courseId) => {
-        try {
-          const response = await fetch (`${REGISTRAR_URL}/enrollments/` + courseId, 
-              {
-                method: 'DELETE',
-                headers: {
-                  'Content-Type': 'application/json',
-                }, 
-              });
+  const [term, setTerm] = useState( {year:'', semester:''  })
+  const [enrollments, setEnrollments] = useState([]);
+  const [message, setMessage] = useState('');
+
+ 
+  const fetchEnrollments = async () => {
+           try {
+            const jwt = sessionStorage.getItem('jwt');
+            const response = await fetch(`${REGISTRAR_URL}/enrollments?studentId=3&year=${term.year}&semester=${term.semester}`,
+            {headers: {
+                'Authorization': jwt,
+            }});
           if (response.ok) {
-            setMessage("Course deleted");
-            fetchSchedule();
+              const data = await response.json();
+              setEnrollments(data);
           } else {
-            const rc = await response.json();
-            setMessage("Delete failed "+rc.message);
+              const rc = await response.json();
+              setMessage(rc.message);
           }
-        } catch (err) {
-          setMessage("network error: "+err);
-        }
+      } catch (err) {
+          setMessage("network error "+err);
       }
+  }
 
-    const onDelete = (e) => {
-        const row_idx = e.target.parentNode.parentNode.rowIndex - 1;
-        const enrollmentId = schedule[row_idx].enrollmentId;
-        console.log(enrollmentId);
-        confirmAlert({
-            title: 'Confirm to delete',
-            message: 'Do you really want to delete?',
-            buttons: [
-              {
-                label: 'Yes',
-                onClick: () => deleteCourse(enrollmentId)
-              },
-              {
-                label: 'No',
+  const dropCourse = async (enrollmentId) => {
+      try {
+          const jwt = sessionStorage.getItem('jwt');
+          const response = await fetch(`${REGISTRAR_URL}/enrollments/${enrollmentId}`,
+              {                 
+                  method: 'DELETE',
+                  headers: {
+                    'Authorization': jwt,
+                    'Content-Type': 'application/json',
+                  }, 
               }
-            ]
-          });
+            );
+          if (response.ok) {
+              setMessage("course dropped");
+              fetchEnrollments();
+          } else {
+              const rc = await response.json();
+              setMessage("course drop failed "+rc.message);
+          }
+      } catch (err) {
+          setMessage("network error "+err);
       }
+  }
 
-    useEffect( () => {
-        fetchSchedule();
-    }, []);
+  const onDelete = (e) => {
+    const row_idx = e.target.parentNode.parentNode.rowIndex - 1;
+    const enrollmentId = enrollments[row_idx].enrollmentId;
+    confirmAlert({
+        title: 'Confirm to drop',
+        message: 'Do you really want to drop this course?',
+        buttons: [
+          {
+            label: 'Yes',
+            onClick: () => dropCourse(enrollmentId)
+          },
+          {
+            label: 'No',
+          }
+        ]
+      });
+  }
 
-    return(
-        <div> 
-           <h3>Schedule</h3>
-           <h4>{message}</h4>
-           <table className="Center"> 
-            <thead>
-                <tr>
-                    {headers.map((s, idx) => (<th key={idx}>{s}</th>))}
-                </tr>
-            </thead>
-            <tbody>
-                {schedule.map((s) => (
-                    <tr key = {s.enrollmentId}>
-                        <td>{s.enrollmentId}</td>
-                        <td>{s.times}</td>
-                        <td>{s.courseId}</td>
-                        <td>{s.sectionId}</td>
-                        <td>{s.year}</td>
-                        <td>{s.credits}</td>
-                        <td>{s.grade}</td>
-                        <td><Button onClick={onDelete}>Delete</Button></td>
-                    </tr>
-                ))}
-            </tbody>
-           </table>
-        </div>
-    );
+  const onChange = (event) => {
+      setTerm({...term, [event.target.name]:event.target.value});
+  }
+
+
+  const headings = ["enrollmentId", "secNo", "courseId", "secId", "building", "room", "times",  ""];
+
+  return(
+      <div> 
+          <h3>Enter year and semester</h3>
+          <h4>{message}</h4>
+          <table className="Center">
+              <tbody>
+                  <tr>
+                      <td>Year</td>
+                      <td><input type="text" name="year" id="year" value={term.year} onChange={onChange} /></td>
+                  </tr>
+                  <tr>
+                      <td>Semester</td>
+                      <td><input type="text" name="semester" id="semester" value={term.semester} onChange={onChange} /></td>
+                  </tr>
+              </tbody>
+          </table>
+          
+          <button type="submit" onClick={fetchEnrollments}>Get Schedule</button>
+          <br/> 
+          <br/>
+          <table className="Center">
+              <thead>
+                  <tr>
+                     { headings.map( (h, idx) => <th key={idx}>{h}</th>) }
+                  </tr>
+              </thead>
+              <tbody>
+              { enrollments.map( (s) => 
+                  <tr key={s.enrollmentId}>
+                      <td>{s.enrollmentId}</td>
+                      <td>{s.sectionNo}</td>
+                      <td>{s.courseId}</td>
+                      <td>{s.sectionId}</td>
+                      <td>{s.building}</td>
+                      <td>{s.room}</td>
+                      <td>{s.times}</td>
+                      <td><Button onClick={onDelete}>Drop</Button></td>
+                  </tr>
+               )}
+              </tbody>
+          </table>
+         
+      </div>
+  );
+
 }
 
 export default ScheduleView;

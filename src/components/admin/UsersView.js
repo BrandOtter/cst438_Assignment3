@@ -10,7 +10,6 @@ function UsersView(props) {
     const headers = ['ID', 'Name', 'Email', 'Type', '', ''];
     
     const [users, setUsers] = useState([  ]);
-
     const [message, setMessage] = useState('');
 
     const  fetchUsers = async () => {
