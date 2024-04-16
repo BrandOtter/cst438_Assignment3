@@ -15,10 +15,12 @@ const AssignmentsView = (props) => {
     const fetchAssignments = useCallback(async () => {
         try {
             const jwt = sessionStorage.getItem('jwt');
-            const response = await fetch(`${REGISTRAR_URL}/sections/${secNo}/assignments`,
-                {headers: {
-                        'Authorization': `Bearer ${jwt}`,
-                    }});
+            const url = `${REGISTRAR_URL}/sections/${secNo}/assignments`;
+            const response = await fetch(url, {
+                headers: {
+                    'Authorization': `Bearer ${jwt}`,
+                }
+            });
             if (response.ok) {
                 const data = await response.json();
                 setAssignments(data);
@@ -47,14 +49,14 @@ const AssignmentsView = (props) => {
         console.log('Delete:', assignmentId);
         try {
             const jwt = sessionStorage.getItem('jwt');
-            const response = await fetch(`${REGISTRAR_URL}/assignments/${assignmentId}`,
-                {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${jwt}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
+            const url = `${REGISTRAR_URL}/assignments/${assignmentId}`;
+            const response = await fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${jwt}`,
+                    'Content-Type': 'application/json',
+                }
+            });
             if (response.ok) {
                 setMessage("Assignment deleted");
                 fetchAssignments();

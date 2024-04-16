@@ -26,7 +26,9 @@ const InstructorSectionsView = (props) => {
 
     const fetchSections = async () => {
         try {
-            const response = await fetch(`${REGISTRAR_URL}/sections?year=${state.year}&semester=${state.semester}`, {
+            const jwt = sessionStorage.getItem('jwt');
+            const url = `${REGISTRAR_URL}/sections?year=${state.year}&semester=${state.semester}`;
+            const response = await fetch(url, {
                 headers: {
                     'Authorization': `Bearer ${sessionStorage.getItem('jwt')}`, // Ensure the JWT is sent in the request
                 }

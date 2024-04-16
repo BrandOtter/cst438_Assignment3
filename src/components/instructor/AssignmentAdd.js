@@ -13,7 +13,8 @@ const AssignmentAdd = ({ secNo, onAddSuccess }) => {
 
         try {
             const jwt = sessionStorage.getItem('jwt');
-            const response = await fetch(`${REGISTRAR_URL}/assignments`, {
+            const url =`${REGISTRAR_URL}/assignments`;
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${jwt}`,

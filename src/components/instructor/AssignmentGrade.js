@@ -7,9 +7,11 @@ const AssignmentGrade = ({ assignmentId, onGradeSuccess }) => {
 
     useEffect(() => {
         const fetchGrades = async () => {
-            const jwt = sessionStorage.getItem('jwt');
+
             try {
-                const response = await fetch(`${REGISTRAR_URL}/assignments/${assignmentId}/grades`, {
+                const jwt = sessionStorage.getItem('jwt');
+                const url = `${REGISTRAR_URL}/assignments/${assignmentId}/grades`;
+                const response = await fetch(url, {
                     headers: {
                         'Authorization': `Bearer ${jwt}`,
                         'Content-Type': 'application/json'
@@ -43,11 +45,13 @@ const AssignmentGrade = ({ assignmentId, onGradeSuccess }) => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        const jwt = sessionStorage.getItem('jwt');
+
 
         try {
             for (const grade of grades) {
-                const response = await fetch(`${REGISTRAR_URL}/grade`, {
+                const jwt = sessionStorage.getItem('jwt');
+                const url = `${REGISTRAR_URL}/grade`;
+                const response = await fetch(url, {
                     method: 'PUT',
                     headers: {
                         'Authorization': `Bearer ${jwt}`,
