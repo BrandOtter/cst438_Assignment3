@@ -19,7 +19,7 @@ const Login = (props) => {
           });
         if (response.ok) {
           const json = await response.json();
-          sessionStorage.setItem("jwt", 'Bearer '+json.jwt);
+          sessionStorage.setItem("jwt", json.jwt);
           props.setUserType(json.role);
           props.setAuth(true);
           setMessage('');

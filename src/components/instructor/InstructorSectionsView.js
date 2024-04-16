@@ -26,18 +26,21 @@ const InstructorSectionsView = (props) => {
 
     const fetchSections = async () => {
         try {
-            const response = await fetch(`${REGISTRAR_URL}/sections?email=dwisneski@csumb.edu&year=` + state.year + `&semester=` + state.semester);
+            const response = await fetch(`${REGISTRAR_URL}/sections?year=${state.year}&semester=${state.semester}`, {
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem('jwt')}`, // Ensure the JWT is sent in the request
+                }
+            });
             if (response.ok) {
                 const sections = await response.json();
-                setSections(sections);     
-                
+                setSections(sections);
             } else {
                 const json = await response.json();
-                setMessage("reponse error: " + json.message);
+                setMessage("response error: " + json.message);
             }
         } catch (err) {
             setMessage("network error: " + err);
-        }        
+        }
     }
 
     useEffect( () => {
@@ -70,7 +73,7 @@ const InstructorSectionsView = (props) => {
                         <td>{s.building}</td>
                         <td>{s.room}</td>
                         <td>{s.times}</td>
-                        <td><Link to="/enrollments" state={indexes} onClick={getSecId}>View Enrollments</Link></td>
+                        <td><Link to="/enrollments" state={{ secNo: s.secNo }}>View Enrollments</Link></td>
                         <td><Link to="/assignments" state={{ secNo: s.secNo }}>View Assignments</Link></td>
 
                     </tr>

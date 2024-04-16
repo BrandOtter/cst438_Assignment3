@@ -7,8 +7,14 @@ const AssignmentGrade = ({ assignmentId, onGradeSuccess }) => {
 
     useEffect(() => {
         const fetchGrades = async () => {
+            const jwt = sessionStorage.getItem('jwt');
             try {
-                const response = await fetch(`${REGISTRAR_URL}/assignments/${assignmentId}/grades`);
+                const response = await fetch(`${REGISTRAR_URL}/assignments/${assignmentId}/grades`, {
+                    headers: {
+                        'Authorization': `Bearer ${jwt}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
                 if (response.ok) {
                     const data = await response.json();
                     setGrades(data);
@@ -37,19 +43,20 @@ const AssignmentGrade = ({ assignmentId, onGradeSuccess }) => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        const jwt = sessionStorage.getItem('jwt');
 
         try {
             for (const grade of grades) {
-                const url = `${REGISTRAR_URL}/grade`; // Changed to use the /grade endpoint
-                const body = {
-                    gradeId: grade.gradeId,
-                    score: grade.score
-                };
-
-                const response = await fetch(url, {
+                const response = await fetch(`${REGISTRAR_URL}/grade`, {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(body),
+                    headers: {
+                        'Authorization': `Bearer ${jwt}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        gradeId: grade.gradeId,
+                        score: grade.score
+                    })
                 });
 
                 if (!response.ok) {
@@ -58,14 +65,13 @@ const AssignmentGrade = ({ assignmentId, onGradeSuccess }) => {
             }
 
             alert('Grades updated successfully!');
-            onGradeSuccess(); // This function should be passed as a prop, as done in AssignmentsView component
+            onGradeSuccess(); // Callback to indicate success
         } catch (error) {
             console.error('Error updating grades:', error);
             setMessage('Failed to update grades.');
             alert(error.message);
         }
     };
-
 
     return (
         <>
@@ -100,7 +106,7 @@ const AssignmentGrade = ({ assignmentId, onGradeSuccess }) => {
                 </table>
                 <button type="submit">Update Grades</button>
             </form>
-            {message && <p>{message}</p> && setMessage('Grades updates successfully.')}
+            {message && <p>{message}</p>}
         </>
     );
 };

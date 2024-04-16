@@ -14,7 +14,11 @@ const AssignmentsView = (props) => {
 
     const fetchAssignments = useCallback(async () => {
         try {
-            const response = await fetch(`${REGISTRAR_URL}/sections/${secNo}/assignments`);
+            const jwt = sessionStorage.getItem('jwt');
+            const response = await fetch(`${REGISTRAR_URL}/sections/${secNo}/assignments`,
+                {headers: {
+                        'Authorization': `Bearer ${jwt}`,
+                    }});
             if (response.ok) {
                 const data = await response.json();
                 setAssignments(data);
@@ -39,9 +43,28 @@ const AssignmentsView = (props) => {
         // Implementation for editing an assignment
     };
 
-    const handleDelete = (assignmentId) => {
+    const handleDelete = async (assignmentId) => {
         console.log('Delete:', assignmentId);
-        // Implementation for deleting an assignment
+        try {
+            const jwt = sessionStorage.getItem('jwt');
+            const response = await fetch(`${REGISTRAR_URL}/assignments/${assignmentId}`,
+                {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${jwt}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+            if (response.ok) {
+                setMessage("Assignment deleted");
+                fetchAssignments();
+            } else {
+                const rc = await response.json();
+                setMessage(rc.message);
+            }
+        } catch (err) {
+            setMessage("network error: " + err);
+        }
     };
 
     return (

@@ -20,7 +20,7 @@ const AssignmentsStudentView = (props) => {
         try {
             const jwt = sessionStorage.getItem('jwt');
             //const response = await fetch(`${REGISTRAR_URL}/assignments?studentId=` + 3 + `&year=` + studentId.year + `&semester=` + studentId.semester);
-            const response = await fetch(`${REGISTRAR_URL}/enrollments?studentId=` + studentId + `&year=` + studentId.year + `&semester=` + studentId.semester,
+            const response = await fetch(`${REGISTRAR_URL}/enrollments?studentId=` + studentId.id + `&year=` + studentId.year + `&semester=` + studentId.semester,
             {headers: {
                 'Authorization': jwt,
             }});

@@ -22,9 +22,23 @@ const EnrollmentsView = (props) => {
 
     const { state } = useLocation();
 
-    const fetchEnrollments = async () => {       
+    useEffect(() => {
+        if (state && state.secId) {
+            fetchEnrollments();
+        }
+    }, [state]);
+
+    const fetchEnrollments = async () => {
+        if (!state.secId) return;  // Add this check to prevent fetch with undefined
+
         try {
-            const response = await fetch(`${REGISTRAR_URL}/sections/` + state.newIndex + `/enrollments`);
+            const jwt = sessionStorage.getItem('jwt');
+            const url = `${REGISTRAR_URL}/sections/${state.secId}/enrollments`;
+            const response = await fetch(url, {
+                headers: {
+                    'Authorization': `Bearer ${jwt}`,
+                }
+            });
             if (response.ok) {
                 const enrollments = await response.json();
                 setEnrollments(enrollments);
@@ -33,9 +47,9 @@ const EnrollmentsView = (props) => {
                 setMessage("response error: " + json.message);
             }
         } catch (err) {
-            setMessage("network error: " + err);
+            setMessage("network error: " + err.message);
         }
-    }
+    };
 
     // Used to set the grade after a change.
     // There is currently an issue where the grade change
