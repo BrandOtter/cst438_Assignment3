@@ -23,7 +23,7 @@ function SectionsView(props) {
             const jwt = sessionStorage.getItem('jwt');
             const response = await fetch(`${REGISTRAR_URL}/courses/${search.courseId}/sections?year=${search.year}&semester=${search.semester}`,
             {headers: {
-                'Authorization': jwt,
+                'Authorization': `Bearer ${jwt}`,
             }});
             if (response.ok) {
               const data = await response.json();
@@ -45,7 +45,7 @@ function SectionsView(props) {
         {
           method: 'DELETE',
           headers: {
-            'Authorization': jwt,
+            'Authorization': `Bearer ${jwt}`,
             'Content-Type': 'application/json',
           }, 
         });

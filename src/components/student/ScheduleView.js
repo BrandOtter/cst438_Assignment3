@@ -26,7 +26,7 @@ const ScheduleView = (props) => {
             const jwt = sessionStorage.getItem('jwt');
             const response = await fetch(`${REGISTRAR_URL}/enrollments?studentId=3&year=${term.year}&semester=${term.semester}`,
             {headers: {
-                'Authorization': jwt,
+                'Authorization': `Bearer ${jwt}`
             }});
           if (response.ok) {
               const data = await response.json();

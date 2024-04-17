@@ -46,7 +46,7 @@ const SectionUpdate = (props)  => {
             {
               method: 'PUT',
               headers: {
-                'Authorization': jwt,
+                'Authorization': `Bearer ${jwt}`,
                 'Content-Type': 'application/json',
               }, 
               body: JSON.stringify(section),

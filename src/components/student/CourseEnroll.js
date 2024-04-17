@@ -23,7 +23,7 @@ const CourseEnroll = (props) => {
             const jwt = sessionStorage.getItem('jwt');
             const response = await fetch(`${REGISTRAR_URL}/sections/open`,
             {headers: {
-                'Authorization': jwt,
+                'Authorization': `Bearer ${jwt}`
             }});
             if (response.ok) {
               const data = await response.json();
@@ -45,13 +45,13 @@ const CourseEnroll = (props) => {
     const enrollInSection = async (e) => {
       const row_idx = e.target.parentNode.parentNode.rowIndex - 1;
       const secNo = sections[row_idx].secNo;
-      const enrollurl = `${REGISTRAR_URL}/enrollments/sections/${secNo}?studentId=3`;
+      const enrollurl = `${REGISTRAR_URL}/enrollments/sections/${secNo}`;
       try {
         const jwt = sessionStorage.getItem('jwt');
         const response = await fetch(enrollurl, 
           { method: 'POST', 
             headers: {
-            'Authorization': jwt,
+            'Authorization': `Bearer ${jwt}`,
             'Content-Type': 'application/json',
             }
           }

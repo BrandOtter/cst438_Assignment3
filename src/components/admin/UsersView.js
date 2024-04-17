@@ -17,7 +17,7 @@ function UsersView(props) {
         const jwt = sessionStorage.getItem('jwt');
         const response = await fetch(`${REGISTRAR_URL}/users`,
             {headers: {
-                'Authorization': jwt,
+                'Authorization': `Bearer ${jwt}`,
             }});
         if (response.ok) {
           const users = await response.json();
@@ -42,7 +42,7 @@ function UsersView(props) {
           {
             method: 'PUT',
             headers: {
-              'Authorization': jwt,
+              'Authorization': `Bearer ${jwt}`,
               'Content-Type': 'application/json',
             }, 
             body: JSON.stringify(user),
@@ -66,7 +66,7 @@ function UsersView(props) {
           {
             method: 'POST',
             headers: {
-              'Authorization': jwt,
+              'Authorization': `Bearer ${jwt}`,
               'Content-Type': 'application/json',
             }, 
             body: JSON.stringify(user),
@@ -91,7 +91,7 @@ function UsersView(props) {
           {
             method: 'DELETE',
             headers: {
-              'Authorization': jwt,
+              'Authorization': `Bearer ${jwt}`,
               'Content-Type': 'application/json',
             }, 
           });

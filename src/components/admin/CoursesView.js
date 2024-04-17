@@ -18,7 +18,7 @@ function CoursesView(props) {
         const jwt = sessionStorage.getItem('jwt');
         const response = await fetch(`${REGISTRAR_URL}/courses`,
             {headers: {
-                'Authorization': jwt,
+                'Authorization': `Bearer ${jwt}`,
             }});
         if (response.ok) {
           const courses = await response.json();
@@ -43,7 +43,7 @@ function CoursesView(props) {
             {
               method: 'PUT',
               headers: {
-                'Authorization': jwt,
+                'Authorization': `Bearer ${jwt}`,
                 'Content-Type': 'application/json',
               }, 
               body: JSON.stringify(course),
@@ -67,7 +67,7 @@ function CoursesView(props) {
             {
               method: 'POST',
               headers: {
-                'Authorization': jwt,
+                'Authorization': `Bearer ${jwt}`,
                 'Content-Type': 'application/json',
               }, 
               body: JSON.stringify(course),
@@ -91,7 +91,7 @@ function CoursesView(props) {
             {
               method: 'DELETE',
               headers: {
-                'Authorization': jwt,
+                'Authorization': `Bearer ${jwt}`,
                 'Content-Type': 'application/json',
               }, 
             });
