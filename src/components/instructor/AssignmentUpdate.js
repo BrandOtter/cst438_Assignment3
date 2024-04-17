@@ -40,9 +40,34 @@ const AssignmentUpdate = ({ assignment, updateAssignment, deleteAssignment }) =>
             setEditMessage('Title and due date must be provided.');
         } else {
             updateAssignment(currentAssignment);
+            saveAssignment(currentAssignment);
             editClose();
         }
     };
+
+    const saveAssignment = async (assignment) => {
+        try {
+          const jwt = sessionStorage.getItem('jwt');
+          const response = await fetch (`${REGISTRAR_URL}/assignments`, 
+            {
+              method: 'PUT',
+              headers: {
+                'Authorization': `Bearer ${jwt}`,
+                'Content-Type': 'application/json',
+              }, 
+              body: JSON.stringify(assignment),
+            });
+          if (response.ok) {
+            setEditMessage("assignment saved");
+          } else {
+            const rc = await response.json();
+            setEditMessage(rc.message);
+          }
+        } catch (err) {
+          setEditMessage("network error: "+err);
+        }
+      }
+
 
     return (
         <div>
