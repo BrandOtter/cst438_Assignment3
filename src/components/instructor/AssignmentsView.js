@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { REGISTRAR_URL } from '../../Constants';
 import AssignmentAdd from './AssignmentAdd';
 import AssignmentGrade from './AssignmentGrade';
+import AssignmentUpdate from './AssignmentUpdate';
 
 const AssignmentsView = (props) => {
     const [assignments, setAssignments] = useState([]);
@@ -44,6 +45,24 @@ const AssignmentsView = (props) => {
         console.log('Edit:', assignmentId);
         // Implementation for editing an assignment
     };
+
+    const save = (assignment) => {
+        fetch (`${REGISTRAR_URL}/assignments`, 
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          }, 
+          body: JSON.stringify(assignment),
+        })
+        .then(response => response.json() )
+        .then(data => {
+            setMessage("Assignment saved");
+            fetchAssignments(secNo);
+        })
+        .catch(err => setMessage(err));
+    }
+    
 
     const handleDelete = async (assignmentId) => {
         console.log('Delete:', assignmentId);
@@ -93,16 +112,14 @@ const AssignmentsView = (props) => {
                 </tr>
                 </thead>
                 <tbody>
-                {assignments.map((assignment) => (
-                    <tr key={assignment.assignmentId}>
-                        <td>{assignment.assignmentId}</td>
-                        <td>{assignment.title}</td>
-                        <td>{assignment.dueDate}</td>
-                        <td>
-                            <button onClick={() => handleGrade(assignment.assignmentId)}>Grade</button>
-                            <button onClick={() => handleEdit(assignment.assignmentId)}>Edit</button>
-                            <button onClick={() => handleDelete(assignment.assignmentId)}>Delete</button>
-                        </td>
+                {assignments.map((a) => (
+                    <tr key={a.assignmentId}>
+                        <td>{a.assignmentId}</td>
+                        <td>{a.title}</td>
+                        <td>{a.dueDate}</td>                        
+                        <td><button onClick={() => handleGrade(a.assignmentId)}>Grade</button></td>
+                        <td><AssignmentUpdate assignment={a} save={save} /></td>
+                        <td><button onClick={() => handleDelete(a.assignmentId)}>Delete</button></td>                        
                     </tr>
                 ))}
                 </tbody>

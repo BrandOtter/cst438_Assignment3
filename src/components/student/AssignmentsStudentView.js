@@ -19,7 +19,6 @@ const AssignmentsStudentView = (props) => {
     const fetchAssignments = async () => {
         try {
             const jwt = sessionStorage.getItem('jwt');
-            //const response = await fetch(`${REGISTRAR_URL}/assignments?studentId=` + 3 + `&year=` + studentId.year + `&semester=` + studentId.semester);
             const response = await fetch(`${REGISTRAR_URL}/enrollments?studentId=` + studentId.id + `&year=` + studentId.year + `&semester=` + studentId.semester,
             {headers: {
                 'Authorization': `Bearer ${jwt}`
@@ -35,7 +34,7 @@ const AssignmentsStudentView = (props) => {
                         newData[i].score = 'No Score';
                         setAssignments(newData);
                     }
-                }  
+                } 
                 
             } else {
                 const json = await response.json();
@@ -57,13 +56,13 @@ const AssignmentsStudentView = (props) => {
            <table className="Center"> 
             <thead>
                 <tr>
-                    {headers.map((a, idx) => (<th key={idx}>{a}</th>))}
+                    {headers.map((s, idx) => (<th key={idx}>{s}</th>))}
                 </tr>
             </thead>
             <tbody>
                 {assignments.map((a) => (
                     <tr key = {a.assignmentId}>
-                        <td>{a.courseId}</td>
+                        <td>{a.courseId+'-'+a.sectionId}</td>
                         <td>{a.title}</td>
                         <td>{a.dueDate}</td>
                         <td>{a.score}</td>

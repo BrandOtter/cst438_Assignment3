@@ -5,45 +5,34 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import { REGISTRAR_URL } from '../../Constants';
 
-const AssignmentUpdate = ({ assignment, updateAssignment, deleteAssignment }) => {
+    const AssignmentUpdate = (props)  => {
+
     const [open, setOpen] = useState(false);
-    const [editingAssignment, setEditingAssignment] = useState(null);
     const [editMessage, setEditMessage] = useState('');
-    const [currentAssignment, setCurrentAssignment] = useState({
-        assignmentId: '',
-        title: '',
-        dueDate: ''
-    });
+    const [assignment, setAssignment] = useState({id:'', courseId:'', secId:' ', title:'', dueDate:''});
 
     const editOpen = () => {
         setOpen(true);
         setEditMessage('');
-        setCurrentAssignment(assignment);
+        setAssignment(props.assignment);
     };
 
     const editClose = () => {
         setOpen(false);
-        setCurrentAssignment({
-            assignmentId: '',
-            title: '',
-            dueDate: ''
-        });
+        setAssignment({id:'', courseId:'', secId:' ', title:'', dueDate:''});
+        setEditMessage('');
     };
-
+    
     const handleFieldChange = (event) => {
-        setCurrentAssignment({ ...currentAssignment, [event.target.name]: event.target.value });
+        setAssignment({...assignment,  [event.target.name]:event.target.value})
     };
 
     const onSave = () => {
-        if (!currentAssignment.title || !currentAssignment.dueDate) {
-            setEditMessage('Title and due date must be provided.');
-        } else {
-            updateAssignment(currentAssignment);
-            saveAssignment(currentAssignment);
-            editClose();
-        }
-    };
+        saveAssignment(assignment);
+        //editClose();
+    }
 
     const saveAssignment = async (assignment) => {
         try {
@@ -81,7 +70,7 @@ const AssignmentUpdate = ({ assignment, updateAssignment, deleteAssignment }) =>
                         fullWidth
                         label="Assignment ID"
                         name="assignmentId"
-                        value={currentAssignment.assignmentId}
+                        value={assignment.id}
                         InputProps={{ readOnly: true }}
                     />
                     <TextField
@@ -90,7 +79,7 @@ const AssignmentUpdate = ({ assignment, updateAssignment, deleteAssignment }) =>
                         fullWidth
                         label="Title"
                         name="title"
-                        value={currentAssignment.title}
+                        value={assignment.title}
                         onChange={handleFieldChange}
                     />
                     <TextField
@@ -99,7 +88,7 @@ const AssignmentUpdate = ({ assignment, updateAssignment, deleteAssignment }) =>
                         label="Due Date"
                         type="date"
                         name="dueDate"
-                        value={currentAssignment.dueDate}
+                        value={assignment.dueDate}
                         InputLabelProps={{ shrink: true }}
                         onChange={handleFieldChange}
                     />
@@ -107,7 +96,6 @@ const AssignmentUpdate = ({ assignment, updateAssignment, deleteAssignment }) =>
                 <DialogActions>
                     <Button color="secondary" onClick={editClose}>Close</Button>
                     <Button color="primary" onClick={onSave}>Save</Button>
-                    <Button color="error" onClick={onDelete}>Delete</Button>
                 </DialogActions>
             </Dialog>
         </div>
