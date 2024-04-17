@@ -10,6 +10,7 @@ const AssignmentsView = (props) => {
     const [message, setMessage] = useState('');
     const [gradingAssignmentId, setGradingAssignmentId] = useState(null);
 
+
     const location = useLocation();
     const { secNo } = location.state;
 
@@ -118,7 +119,7 @@ const AssignmentsView = (props) => {
                         <td>{a.title}</td>
                         <td>{a.dueDate}</td>                        
                         <td><button onClick={() => handleGrade(a.assignmentId)}>Grade</button></td>
-                        <td><AssignmentUpdate assignment={a} save={save} /></td>
+                        <td><AssignmentUpdate assignment={a} save={save} onUpdateSuccess={fetchAssignments} /></td>
                         <td><button onClick={() => handleDelete(a.assignmentId)}>Delete</button></td>                        
                     </tr>
                 ))}

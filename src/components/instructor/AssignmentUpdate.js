@@ -31,31 +31,32 @@ import { REGISTRAR_URL } from '../../Constants';
 
     const onSave = () => {
         saveAssignment(assignment);
-        //editClose();
     }
 
     const saveAssignment = async (assignment) => {
         try {
-          const jwt = sessionStorage.getItem('jwt');
-          const response = await fetch (`${REGISTRAR_URL}/assignments`, 
-            {
-              method: 'PUT',
-              headers: {
-                'Authorization': `Bearer ${jwt}`,
-                'Content-Type': 'application/json',
-              }, 
-              body: JSON.stringify(assignment),
+            const jwt = sessionStorage.getItem('jwt');
+            const response = await fetch(`${REGISTRAR_URL}/assignments`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${jwt}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(assignment),
             });
-          if (response.ok) {
-            setEditMessage("assignment saved");
-          } else {
-            const rc = await response.json();
-            setEditMessage(rc.message);
-          }
+            if (response.ok) {
+                setEditMessage("Assignment saved");
+                props.onUpdateSuccess();
+                editClose();
+
+            } else {
+                const rc = await response.json();
+                setEditMessage(rc.message);
+            }
         } catch (err) {
-          setEditMessage("network error: "+err);
+            setEditMessage("Network error: " + err);
         }
-      }
+    }
 
 
     return (
