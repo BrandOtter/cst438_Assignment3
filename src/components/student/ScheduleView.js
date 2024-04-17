@@ -47,7 +47,7 @@ const ScheduleView = (props) => {
               {                 
                   method: 'DELETE',
                   headers: {
-                    'Authorization': jwt,
+                    'Authorization': `Bearer ${jwt}`,
                     'Content-Type': 'application/json',
                   }, 
               }
